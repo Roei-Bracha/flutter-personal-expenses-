@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class NewTransaction extends StatefulWidget {
   final Function addTx;
@@ -11,17 +12,32 @@ class NewTransaction extends StatefulWidget {
 
 class _NewTransactionState extends State<NewTransaction> {
   final titleControler = TextEditingController();
-
   final amountControler = TextEditingController();
+  DateTime _selectedDate = null;
 
   void submitData() {
     final String enteredTitle = titleControler.text;
     final double enteredAmount = double.parse(amountControler.text);
-    if (enteredTitle.isEmpty || enteredAmount <= 0) {
+    if (enteredTitle.isEmpty || enteredAmount <= 0 || _selectedDate==null) {
       return;
     }
-    widget.addTx(enteredTitle, enteredAmount);
+    widget.addTx(enteredTitle, enteredAmount,_selectedDate);
     Navigator.of(context).pop(); // close the modal on submit
+  }
+
+  void _presentDatePicker() {
+    showDatePicker(
+            context: context,
+            initialDate: DateTime.now(),
+            firstDate: DateTime(2019),
+            lastDate: DateTime.now())
+        .then((value) {
+      if (value != null) {
+        setState(() {
+          _selectedDate = value;
+        });
+      }
+    });
   }
 
   @override
@@ -43,9 +59,23 @@ class _NewTransactionState extends State<NewTransaction> {
               keyboardType: TextInputType.numberWithOptions(decimal: true),
               onSubmitted: (_) => {submitData()},
             ),
-            FlatButton(
+            Container(
+              height: 70,
+              child: Row(
+                children: <Widget>[
+                  Text(_selectedDate == null ?'No Date Chosen' : DateFormat.yMd().format(_selectedDate)),
+                  FlatButton(
+                    onPressed: _presentDatePicker,
+                    child: Text('Choose Date'),
+                    textColor: Theme.of(context).primaryColor,
+                  )
+                ],
+              ),
+            ),
+            RaisedButton(
               onPressed: submitData,
-              textColor: Colors.purple,
+              textColor: Colors.white,
+              color: Theme.of(context).primaryColor,
               child: Text('AddTransaction'),
             )
           ],

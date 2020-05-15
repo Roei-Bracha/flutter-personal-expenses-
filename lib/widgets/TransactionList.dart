@@ -6,8 +6,8 @@ import '../models/trasaction.dart';
 
 class TransactionList extends StatelessWidget {
   final List<Transaction> transactions;
-
-  TransactionList(this.transactions);
+  Function deleteTrunsuction;
+  TransactionList(this.transactions, this.deleteTrunsuction);
 
   @override
   Widget build(BuildContext context) {
@@ -39,14 +39,27 @@ class TransactionList extends StatelessWidget {
               itemBuilder: (ctx, index) {
                 // return TransactionCard(transactions[index]);
                 return Card(
-                  margin: EdgeInsets.symmetric(horizontal: 5,vertical: 8),
+                  margin: EdgeInsets.symmetric(horizontal: 5, vertical: 8),
                   elevation: 5,
-                                  child: ListTile(
+                  child: ListTile(
                     leading: CircleAvatar(
-                      child: FittedBox(child: Text('\$${transactions[index].amount.toString()}')),
+                      child: FittedBox(
+                          child: Text(
+                              '\$${transactions[index].amount.toString()}')),
                     ),
-                    title: Text(transactions[index].title,style: Theme.of(context).textTheme.headline6,),
-                    subtitle: Text(DateFormat.yMMMd().format(transactions[index].date)),
+                    title: Text(
+                      transactions[index].title,
+                      style: Theme.of(context).textTheme.headline6,
+                    ),
+                    subtitle: Text(
+                        DateFormat.yMMMd().format(transactions[index].date)),
+                    trailing: IconButton(
+                      icon: Icon(Icons.delete),
+                      color: Theme.of(context).errorColor,
+                      onPressed: () {
+                        deleteTrunsuction(transactions[index].id);
+                      },
+                    ),
                   ),
                 );
               },

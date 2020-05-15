@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:personal_expenses/widgets/Chart.dart';
 import 'package:personal_expenses/widgets/NewTransaction.dart';
@@ -21,11 +23,11 @@ class MyApp extends StatelessWidget {
         fontFamily: 'Quicksand',
         visualDensity: VisualDensity.adaptivePlatformDensity,
         textTheme: ThemeData.light().textTheme.copyWith(
-              headline6: TextStyle(
-                  fontFamily: 'OpenSans',
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold),
-            ),
+            headline6: TextStyle(
+                fontFamily: 'OpenSans',
+                fontSize: 18,
+                fontWeight: FontWeight.bold),
+            button: TextStyle(color: Colors.white)),
         appBarTheme: AppBarTheme(
           textTheme: ThemeData.light().textTheme.copyWith(
                 headline6: TextStyle(
@@ -48,21 +50,27 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   final List<Transaction> _userTransactions = [
     Transaction(
-        id: 't1', title: 'New shoes', amount: 69.99, date: DateTime.now().subtract(Duration(days: 1))),
+        id: 't1',
+        title: 'New shoes',
+        amount: 69.99,
+        date: DateTime.now().subtract(Duration(days: 1))),
     Transaction(
         id: 't2',
         title: 'Weekly Groceries',
         amount: 16.53,
-        date:DateTime.now().subtract(Duration(days: 2))),
+        date: DateTime.now().subtract(Duration(days: 2))),
   ];
-  void _addNewTrasaction(String title, double amount) {
+  void _addNewTrasaction(String title, double amount, DateTime date) {
     final newTx = Transaction(
-        amount: amount,
-        date: DateTime.now(),
-        id: DateTime.now().toString(),
-        title: title);
+        amount: amount, date: date, id: Random().toString(), title: title);
     setState(() {
       _userTransactions.add(newTx);
+    });
+  }
+
+  void _deleteTransaction(String id) {
+    setState(() {
+          _userTransactions.removeWhere((element) => element.id != id);
     });
   }
 
@@ -75,8 +83,10 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   List<Transaction> get _recentTransactions {
-    return _userTransactions.where((element) =>
-        element.date.isAfter(DateTime.now().subtract(Duration(days: 7)))).toList();
+    return _userTransactions
+        .where((element) =>
+            element.date.isAfter(DateTime.now().subtract(Duration(days: 7))))
+        .toList();
   }
 
   @override
@@ -103,7 +113,7 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Column(
           children: <Widget>[
             Chart(_recentTransactions),
-            TransactionList(_userTransactions),
+            TransactionList(_userTransactions,_deleteTransaction),
           ],
         ),
       ),
